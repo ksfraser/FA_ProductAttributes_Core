@@ -332,30 +332,6 @@ class hooks_FA_ProductAttributes extends hooks
             return false; // No access, don't handle
         }
 
-        // Handle Ajax requests
-        if (isset($_GET['ajax'])) {
-            header('Content-Type: application/json');
-            $response = ['success' => false, 'message' => 'Unknown error'];
-
-            if (isset($_POST['update_product_config'])) {
-                if ($dao) {
-                    $parentStockId = $_POST['parent_stock_id'] ?? null;
-                    if ($parentStockId === '') $parentStockId = null;
-                    try {
-                        $dao->setProductParent($_POST['stock_id'], $parentStockId);
-                        $response = ['success' => true, 'message' => 'Product configuration updated.'];
-                    } catch (Exception $e) {
-                        $response = ['success' => false, 'message' => 'Failed to update product configuration: ' . $e->getMessage()];
-                    }
-                } else {
-                    $response = ['success' => false, 'message' => 'Database connection unavailable.'];
-                }
-            }
-
-            echo json_encode($response);
-            return true; // Handled
-        }
-
         // Handle the tab content
         try {
             global $path_to_root;
@@ -390,91 +366,12 @@ class hooks_FA_ProductAttributes extends hooks
             // Display content based on sub-tab
             if ($current_subtab === 'main') {
                 // Handle form submission
-                if (isset($_POST['update_product_config'])) {
-                    if ($dao) {
-                        $parentStockId = $_POST['parent_stock_id'] ?? null;
-                        if ($parentStockId === '') $parentStockId = null;
-                        try {
-                            $dao->setProductParent($stock_id, $parentStockId);
-                            // Notification handled by Ajax, or skip for tab reloads
-                        } catch (Exception $e) {
-                            display_error("Failed to update product configuration: " . $e->getMessage());
-                        }
-                    }
-                }
+                $controller = new \Ksfraser\FA_ProductAttributes\Controller\ProductAttributesTabController($dao);
+                $controller->handlePost($stock_id);
 
-                if ($dao === null) {
-                    echo "<p><strong>Database connection issue:</strong> Product attributes features are currently unavailable. Please check the module configuration.</p>";
-                    echo "<p>The module is installed but cannot connect to the database. Contact your administrator.</p>";
-                } else {
-                    // Main tab: Show parent product status and assignments
-                    $assignments = $dao->listAssignments($stock_id);
-                    $categoryAssignments = $dao->listCategoryAssignments($stock_id);
-                    $isParent = !empty($categoryAssignments); // Product is parent if it has category assignments
-                    $currentParent = $dao->getProductParent($stock_id);
-                    $allProducts = $dao->getAllProducts();
-
-                    echo "<h4>Product Hierarchy:</h4>";
-                    echo "<form method='post' action='' target='_self' style='display: inline;'>";
-                    echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
-
-                    // Parent selector
-                    echo "<label>Parent Product: <select name='parent_stock_id'>";
-                    echo "<option value=''>None</option>";
-                    foreach ($allProducts as $product) {
-                        if ($product['stock_id'] === $stock_id) continue; // Can't be parent of self
-                        $selected = ($currentParent === $product['stock_id']) ? 'selected' : '';
-                        echo "<option value='" . htmlspecialchars($product['stock_id']) . "' $selected>" . htmlspecialchars($product['stock_id'] . ' - ' . $product['description']) . "</option>";
-                    }
-                    echo "</select></label> ";
-
-                    echo "<button type='button' onclick='fa_pa_updateParent(this)' name='update_product_config' value='1'>Update</button>";
-                    echo "</form>";
-
-                    echo "<script>
-                    function fa_pa_updateParent(button) {
-                        var form = button.form;
-                        var formData = new FormData(form);
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('POST', window.location.href + '&ajax=1', true);
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState === 4) {
-                                if (xhr.status === 200) {
-                                    try {
-                                        var response = JSON.parse(xhr.responseText);
-                                        if (response.success) {
-                                            alert(response.message);
-                                        } else {
-                                            alert('Error: ' + response.message);
-                                        }
-                                    } catch (e) {
-                                        alert('Invalid response from server: ' + xhr.responseText.substring(0, 100));
-                                    }
-                                } else {
-                                    alert('Error updating parent product: ' + xhr.status);
-                                }
-                            }
-                        };
-                        xhr.send(formData);
-                    }
-                    </script>";
-
-                    echo "<h4>Current Assignments:</h4>";
-                    if (empty($assignments)) {
-                        echo "<p>No attributes assigned to this product.</p>";
-                    } else {
-                        start_table(TABLESTYLE2);
-                        table_header(array(_("Category"), _("Value"), _("Actions")));
-                        foreach ($assignments as $assignment) {
-                            start_row();
-                            label_cell($assignment['category_label'] ?? '');
-                            label_cell($assignment['value_label'] ?? '');
-                            label_cell('<a href="#">' . _("Edit") . '</a> | <a href="#">' . _("Remove") . '</a>');
-                            end_row();
-                        }
-                        end_table();
-                    }
-                }
+                // Render UI
+                $ui = new \Ksfraser\FA_ProductAttributes\UI\ProductAttributesTabUI($dao);
+                echo $ui->renderMainTab($stock_id);
             } elseif (isset($subtabs[$current_subtab])) {
                 // Plugin-provided sub-tab content
                 $tab_info = $subtabs[$current_subtab];
