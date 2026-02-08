@@ -148,8 +148,8 @@ class hooks_FA_ProductAttributes extends hooks
         global $path_to_root;
 
         // Register security extensions for this module
-        if (function_exists('add_security_extensions')) {
-            add_security_extensions();
+        if (function_exists('add_access_extensions')) {
+            add_access_extensions();
         }
 
         // FA automatically calls hook methods on this class:
@@ -214,8 +214,8 @@ class hooks_FA_ProductAttributes extends hooks
      */
     function item_display_tab_headers($tabs) {
         // Ensure security extensions are registered for this module
-        if (function_exists('add_security_extensions')) {
-            add_security_extensions();
+        if (function_exists('add_access_extensions')) {
+            add_access_extensions();
         }
 
         // Add Product Attributes tab to the tabs array
@@ -290,9 +290,6 @@ class hooks_FA_ProductAttributes extends hooks
      */
     function item_display_tab_content($stock_id, $selected_tab) {
         // Ensure security extensions are registered for this module
-        if (function_exists('add_security_extensions')) {
-            add_security_extensions();
-        }
         if (function_exists('add_access_extensions')) {
             add_access_extensions();
         }

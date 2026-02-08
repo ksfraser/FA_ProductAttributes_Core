@@ -13,7 +13,6 @@ if ($path_to_root === false) {
 
 include($path_to_root . "/includes/session.inc");
 
-add_security_extensions();
 add_access_extensions();
 
 use Ksfraser\ModulesDAO\Factory\DatabaseAdapterFactory;
