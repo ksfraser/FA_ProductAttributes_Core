@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab9eb2a74878d8edebc60a92c6a6c736",
+    "content-hash": "2178a913fc5c2973179de7bba0345305",
     "packages": [
         {
             "name": "ksfraser/fa-hooks",
@@ -56,7 +56,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ksfraser/FA_ProductAttributes.git",
-                "reference": "22717ecb647da4372b847354732312428e0589de"
+                "reference": "6a612ee38adb5f6f6ee58242495e1f7fae6c8ec3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ksfraser/FA_ProductAttributes/zipball/6a612ee38adb5f6f6ee58242495e1f7fae6c8ec3",
+                "reference": "6a612ee38adb5f6f6ee58242495e1f7fae6c8ec3",
+                "shasum": ""
             },
             "require": {
                 "ksfraser/fa-hooks": "^1.0 || dev-main",
@@ -74,12 +80,12 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Ksfraser\\FA_ProductAttributes\\": "src/Ksfraser/FA_ProductAttributes/"
+                    "Ksfraser\\FA_ProductAttributes\\": "composer-lib/src/Ksfraser/FA_ProductAttributes/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "Ksfraser\\FA_ProductAttributes\\Test\\": "tests/",
+                    "Ksfraser\\FA_ProductAttributes\\Test\\": "composer-lib/tests/",
                     "Ksfraser\\FA_ProductAttributes_Variations\\Test\\": "../fa_product_attributes_variations/tests/"
                 }
             },
@@ -92,7 +98,11 @@
                 }
             ],
             "description": "FrontAccounting-compatible ordered product attributes (royal order of adjectives)",
-            "time": "2026-02-08T20:09:05+00:00"
+            "support": {
+                "source": "https://github.com/ksfraser/FA_ProductAttributes/tree/main",
+                "issues": "https://github.com/ksfraser/FA_ProductAttributes/issues"
+            },
+            "time": "2026-02-08T20:27:33+00:00"
         },
         {
             "name": "ksfraser/ksf-modules-dao",
