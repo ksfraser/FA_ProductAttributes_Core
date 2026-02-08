@@ -370,9 +370,13 @@ class hooks_FA_ProductAttributes extends hooks
                     if ($dao) {
                         $parentStockId = $_POST['parent_stock_id'] ?? null;
                         if ($parentStockId === '') $parentStockId = null;
-                        $dao->setProductParent($stock_id, $parentStockId);
+                        try {
+                            $dao->setProductParent($stock_id, $parentStockId);
+                            display_notification("Product configuration updated.");
+                        } catch (Exception $e) {
+                            display_error("Failed to update product configuration: " . $e->getMessage());
+                        }
                     }
-                    display_notification("Product configuration updated.");
                 }
 
                 if ($dao === null) {
@@ -387,7 +391,7 @@ class hooks_FA_ProductAttributes extends hooks
                     $allProducts = $dao->getAllProducts();
 
                     echo "<h4>Product Hierarchy:</h4>";
-                    echo "<form method='post' action='' target='_self' style='display: inline;'>";
+                    echo "<form method='post' action='' target='_self' style='display: inline;' onsubmit='return updateParentAjax();'>";
                     echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
 
                     // Parent selector
@@ -400,9 +404,23 @@ class hooks_FA_ProductAttributes extends hooks
                     }
                     echo "</select></label> ";
 
-                    echo "<label><input type='checkbox' name='is_parent' value='1' " . ($isParent ? 'checked' : '') . "> This is a parent product (can have variations)</label> ";
                     echo "<input type='submit' name='update_product_config' value='Update'>";
                     echo "</form>";
+
+                    echo "<script>
+                    function updateParentAjax() {
+                        var form = event.target;
+                        var formData = $(form).serialize();
+                        $.post(window.location.href, formData)
+                        .done(function(data) {
+                            alert('Parent product updated successfully.');
+                        })
+                        .fail(function(xhr, status, error) {
+                            alert('Error updating parent product: ' + error);
+                        });
+                        return false; // Prevent form submission
+                    }
+                    </script>";
 
                     echo "<h4>Current Assignments:</h4>";
                     if (empty($assignments)) {
