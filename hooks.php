@@ -396,7 +396,7 @@ class hooks_FA_ProductAttributes extends hooks
                         if ($parentStockId === '') $parentStockId = null;
                         try {
                             $dao->setProductParent($stock_id, $parentStockId);
-                            display_notification("Product configuration updated.");
+                            // Notification handled by Ajax, or skip for tab reloads
                         } catch (Exception $e) {
                             display_error("Failed to update product configuration: " . $e->getMessage());
                         }
@@ -415,7 +415,7 @@ class hooks_FA_ProductAttributes extends hooks
                     $allProducts = $dao->getAllProducts();
 
                     echo "<h4>Product Hierarchy:</h4>";
-                    echo "<form method='post' action='' target='_self' style='display: inline;' onsubmit='return updateParentAjax();'>";
+                    echo "<form method='post' action='' target='_self' style='display: inline;'>";
                     echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
 
                     // Parent selector
@@ -428,20 +428,24 @@ class hooks_FA_ProductAttributes extends hooks
                     }
                     echo "</select></label> ";
 
-                    echo "<button type='button' onclick='updateParentAjax()' name='update_product_config'>Update</button>";
+                    echo "<button type='button' onclick='updateParentAjax(this)' name='update_product_config' value='1'>Update</button>";
                     echo "</form>";
 
                     echo "<script>
-                    function updateParentAjax() {
-                        var form = document.querySelector('form');
+                    function updateParentAjax(button) {
+                        var form = button.closest('form');
                         var formData = $(form).serialize();
                         $.post(window.location.href + '&ajax=1', formData)
                         .done(function(data) {
-                            var response = JSON.parse(data);
-                            if (response.success) {
-                                alert(response.message);
-                            } else {
-                                alert('Error: ' + response.message);
+                            try {
+                                var response = JSON.parse(data);
+                                if (response.success) {
+                                    alert(response.message);
+                                } else {
+                                    alert('Error: ' + response.message);
+                                }
+                            } catch (e) {
+                                alert('Invalid response from server');
                             }
                         })
                         .fail(function(xhr, status, error) {
