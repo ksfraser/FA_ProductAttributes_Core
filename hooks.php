@@ -240,18 +240,46 @@ class hooks_FA_ProductAttributes extends hooks
             // Ensure autoloader is loaded
             self::ensure_autoloader_loaded();
 
-            // Debug: Check if class exists
-            if (!class_exists('\Ksfraser\ModulesDAO\Factory\DatabaseAdapterFactory')) {
-                $autoloader_path = __DIR__ . '/composer-lib/vendor/autoload.php';
-                error_log("FA_ProductAttributes: DatabaseAdapterFactory class not found after autoloader");
-                throw new \Exception("DatabaseAdapterFactory class not found. Check autoloader path: " . $autoloader_path);
+            // Try to load required classes directly if autoloader fails
+            if (!class_exists('\Ksfraser\ModulesDAO\Db\DbAdapterInterface')) {
+                $interface_path = __DIR__ . '/composer-lib/vendor/ksfraser/ksf-modules-dao/src/Db/DbAdapterInterface.php';
+                if (file_exists($interface_path)) {
+                    require_once $interface_path;
+                }
             }
 
-            // Create database adapter
-            $db_adapter = \Ksfraser\ModulesDAO\Factory\DatabaseAdapterFactory::create('fa');
+            // Debug: Check if class exists
+            if (!class_exists('\Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter')) {
+                $autoloader_path = __DIR__ . '/composer-lib/vendor/autoload.php';
+                error_log("FA_ProductAttributes: FrontAccountingDbAdapter class not found after autoloader");
+                
+                // Try to load the class directly
+                $direct_path = __DIR__ . '/composer-lib/vendor/ksfraser/ksf-modules-dao/src/Db/FrontAccountingDbAdapter.php';
+                if (file_exists($direct_path)) {
+                    error_log("FA_ProductAttributes: Trying to load FrontAccountingDbAdapter directly from: " . $direct_path);
+                    require_once $direct_path;
+                }
+                
+                if (!class_exists('\Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter')) {
+                    throw new \Exception("FrontAccountingDbAdapter class not found. Check autoloader path: " . $autoloader_path);
+                }
+            }
+
+            // Create database adapter directly (avoid factory issues)
+            $db_adapter = new \Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter();
+
+            // Check if ProductAttributesDao exists
+            if (!class_exists('\Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao')) {
+                $dao_path = __DIR__ . '/composer-lib/src/Ksfraser/FA_ProductAttributes/Dao/ProductAttributesDao.php';
+                if (file_exists($dao_path)) {
+                    require_once $dao_path;
+                } else {
+                    throw new \Exception("ProductAttributesDao class not found at: " . $dao_path);
+                }
+            }
 
             // Create DAO
-            $dao = new \Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao($db_adapter);
+            $dao = new \Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao($db_adapter, null);
         }
         return $dao;
     }
@@ -308,8 +336,14 @@ class hooks_FA_ProductAttributes extends hooks
         try {
             global $path_to_root;
 
-            // Create DAOs
-            $dao = $this->get_product_attributes_dao();
+            // Create DAOs (handle failures gracefully)
+            $dao = null;
+            try {
+                $dao = $this->get_product_attributes_dao();
+            } catch (Throwable $e) {
+                error_log("FA_ProductAttributes: Failed to create DAO, continuing without database features: " . $e->getMessage());
+                // Continue without DAO - some features won't work but basic display will
+            }
 
             // Get registered sub-tabs from plugins
             $subtabs = $this->get_registered_subtabs();
@@ -331,31 +365,36 @@ class hooks_FA_ProductAttributes extends hooks
 
             // Display content based on sub-tab
             if ($current_subtab === 'main') {
-                // Main tab: Show parent product status and assignments
-                $assignments = $dao->listAssignments($stock_id);
-                $isParent = $dao->getProductParent($stock_id) === null && !empty($dao->getVariationCountForProductCategory($stock_id, 0));
-
-                echo "<h4>Product Configuration:</h4>";
-                echo "<form method='post' action='' style='display: inline;'>";
-                echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
-                echo "<label><input type='checkbox' name='is_parent' value='1' " . ($isParent ? 'checked' : '') . "> This is a parent product (can have variations)</label> ";
-                echo "<input type='submit' name='update_product_config' value='Update'>";
-                echo "</form>";
-
-                echo "<h4>Current Assignments:</h4>";
-                if (empty($assignments)) {
-                    echo "<p>No attributes assigned to this product.</p>";
+                if ($dao === null) {
+                    echo "<p><strong>Database connection issue:</strong> Product attributes features are currently unavailable. Please check the module configuration.</p>";
+                    echo "<p>The module is installed but cannot connect to the database. Contact your administrator.</p>";
                 } else {
-                    start_table(TABLESTYLE2);
-                    table_header(array(_("Category"), _("Value"), _("Actions")));
-                    foreach ($assignments as $assignment) {
-                        start_row();
-                        label_cell($assignment['category_label'] ?? '');
-                        label_cell($assignment['value_label'] ?? '');
-                        label_cell('<a href="#">' . _("Edit") . '</a> | <a href="#">' . _("Remove") . '</a>');
-                        end_row();
+                    // Main tab: Show parent product status and assignments
+                    $assignments = $dao->listAssignments($stock_id);
+                    $isParent = $dao->getProductParent($stock_id) === null && !empty($dao->getVariationCountForProductCategory($stock_id, 0));
+
+                    echo "<h4>Product Configuration:</h4>";
+                    echo "<form method='post' action='' style='display: inline;'>";
+                    echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
+                    echo "<label><input type='checkbox' name='is_parent' value='1' " . ($isParent ? 'checked' : '') . "> This is a parent product (can have variations)</label> ";
+                    echo "<input type='submit' name='update_product_config' value='Update'>";
+                    echo "</form>";
+
+                    echo "<h4>Current Assignments:</h4>";
+                    if (empty($assignments)) {
+                        echo "<p>No attributes assigned to this product.</p>";
+                    } else {
+                        start_table(TABLESTYLE2);
+                        table_header(array(_("Category"), _("Value"), _("Actions")));
+                        foreach ($assignments as $assignment) {
+                            start_row();
+                            label_cell($assignment['category_label'] ?? '');
+                            label_cell($assignment['value_label'] ?? '');
+                            label_cell('<a href="#">' . _("Edit") . '</a> | <a href="#">' . _("Remove") . '</a>');
+                            end_row();
+                        }
+                        end_table();
                     }
-                    end_table();
                 }
             } elseif (isset($subtabs[$current_subtab])) {
                 // Plugin-provided sub-tab content
@@ -428,6 +467,12 @@ function fa_product_attributes_init() {
     // Register core hooks
     $core_hooks = new hooks_FA_ProductAttributes();
     $core_hooks->register_hooks();
+
+    // Load variations module hooks if available
+    $variations_hooks_path = $path_to_root . '/modules/fa_product_attributes_variations/hooks.php';
+    if (file_exists($variations_hooks_path)) {
+        include_once $variations_hooks_path;
+    }
 
     // Plugin loading is now handled lazily when hooks are triggered
     // This ensures plugins are loaded only when needed

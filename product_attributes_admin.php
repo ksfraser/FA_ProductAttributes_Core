@@ -34,16 +34,6 @@ if (!defined('FA_ROOT')) {
     define('FA_ROOT', $path_to_root . '/');
 }
 
-// Fix TB_PREF if it's incorrectly set
-if (!defined('TB_PREF') && isset($_SESSION['wa_current_user']->company)) {
-    define('TB_PREF', $_SESSION['wa_current_user']->company . '_');
-}
-
-$autoload = __DIR__ . "/../vendor/autoload.php";
-if (is_file($autoload)) {
-    require_once $autoload;
-}
-
 $autoload = __DIR__ . "/../vendor/autoload.php";
 if (is_file($autoload)) {
     require_once $autoload;
@@ -51,14 +41,25 @@ if (is_file($autoload)) {
 
 page(_("Product Attributes Administration"));
 
-start_table(TABLESTYLE, "width=80%");
-table_header(array(_("Feature"), _("Status"), _("Description")));
+display_notification(_("FA_ProductAttributes core module is active and ready to use."));
 
-label_row(_("Core Module"), _("Active"), _("FA_ProductAttributes core module is loaded"));
-label_row(_("Database Schema"), _("Available"), _("Product attributes tables are installed"));
-label_row(_("Admin Interface"), _("Ready"), _("Module administration interface is functional"));
-label_row(_("Security"), _("Configured"), _("Access permissions are set up"));
+// Use FA hooks system to get admin links from related modules
+$admin_links = [];
+if (function_exists('apply_filters')) {
+    $admin_links = apply_filters('product_attributes_admin_links', $admin_links);
+}
 
-end_table();
+// Display related module admin links if any found
+if (!empty($admin_links)) {
+    display_notification(_("Related modules:"));
+    echo "<ul>";
+    foreach ($admin_links as $link) {
+        $name = isset($link['name']) ? $link['name'] : _('Unknown Module');
+        $url = isset($link['url']) ? $link['url'] : '#';
+        $description = isset($link['description']) ? $link['description'] : '';
+        echo "<li><a href='" . $url . "'>" . $name . "</a>" . (!empty($description) ? " - " . $description : "") . "</li>";
+    }
+    echo "</ul>";
+}
 
 end_page();

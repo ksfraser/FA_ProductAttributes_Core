@@ -54,3 +54,34 @@ if (!isset($GLOBALS['fa_hooks'])) {
 function fa_hooks() {
     return $GLOBALS['fa_hooks'] ?? null;
 }
+
+/**
+ * Apply filters to a value using the global hook manager
+ *
+ * @param string $filter_name The name of the filter
+ * @param mixed $value The value to filter
+ * @return mixed The filtered value
+ */
+function apply_filters($filter_name, $value) {
+    $hooks = fa_hooks();
+    if ($hooks && method_exists($hooks, 'apply_filters')) {
+        return $hooks->apply_filters($filter_name, $value);
+    }
+    return $value;
+}
+
+/**
+ * Add a filter callback to the global hook manager
+ *
+ * @param string $filter_name The name of the filter
+ * @param callable $callback The callback function
+ * @param int $priority The priority (lower numbers run first)
+ * @return bool True on success
+ */
+function add_filter($filter_name, $callback, $priority = 10) {
+    $hooks = fa_hooks();
+    if ($hooks && method_exists($hooks, 'add_filter')) {
+        return $hooks->add_filter($filter_name, $callback, $priority);
+    }
+    return false;
+}
