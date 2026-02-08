@@ -1,5 +1,10 @@
-name=FA_ProductAttributes_Core
-description=FA Product Attributes Core Module
-version=1.0.0
-menuentries=product_attributes_admin.php
-access=SA_FA_ProductAttributes
+Package: FA_ProductAttributes_Core
+Name: FA_ProductAttributes_Core
+Description: FA Product Attributes Core Module
+Author: Kevin Fraser <kevin@ksfraser.com>
+Maintenance: Kevin Fraser <kevin@ksfraser.com>
+Homepage: http://ksfraser.com
+Type: extension
+InstallPath: modules/FA_ProductAttributes_Core
+Filename: FA_ProductAttributes_Core
+Version: 1.0
