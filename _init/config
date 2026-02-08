@@ -1,0 +1,5 @@
+name=FA_ProductAttributes_Core
+description=FA Product Attributes Core Module
+version=1.0.0
+menuentries=product_attributes_admin.php
+access=SA_FA_ProductAttributes
