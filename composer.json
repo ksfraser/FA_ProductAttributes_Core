@@ -9,6 +9,15 @@
             "email": "kevin@ksfraser.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../composer-lib",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
     "require": {
         "php": ">=7.3",
         "ksfraser/fa-product-attributes": "*",
