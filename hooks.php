@@ -332,6 +332,30 @@ class hooks_FA_ProductAttributes extends hooks
             return false; // No access, don't handle
         }
 
+        // Handle Ajax requests
+        if (isset($_GET['ajax'])) {
+            header('Content-Type: application/json');
+            $response = ['success' => false, 'message' => 'Unknown error'];
+
+            if (isset($_POST['update_product_config'])) {
+                if ($dao) {
+                    $parentStockId = $_POST['parent_stock_id'] ?? null;
+                    if ($parentStockId === '') $parentStockId = null;
+                    try {
+                        $dao->setProductParent($_POST['stock_id'], $parentStockId);
+                        $response = ['success' => true, 'message' => 'Product configuration updated.'];
+                    } catch (Exception $e) {
+                        $response = ['success' => false, 'message' => 'Failed to update product configuration: ' . $e->getMessage()];
+                    }
+                } else {
+                    $response = ['success' => false, 'message' => 'Database connection unavailable.'];
+                }
+            }
+
+            echo json_encode($response);
+            return true; // Handled
+        }
+
         // Handle the tab content
         try {
             global $path_to_root;
@@ -411,9 +435,14 @@ class hooks_FA_ProductAttributes extends hooks
                     function updateParentAjax() {
                         var form = event.target;
                         var formData = $(form).serialize();
-                        $.post(window.location.href, formData)
+                        $.post(window.location.href + '&ajax=1', formData)
                         .done(function(data) {
-                            alert('Parent product updated successfully.');
+                            var response = JSON.parse(data);
+                            if (response.success) {
+                                alert(response.message);
+                            } else {
+                                alert('Error: ' + response.message);
+                            }
                         })
                         .fail(function(xhr, status, error) {
                             alert('Error updating parent product: ' + error);
