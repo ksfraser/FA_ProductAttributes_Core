@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ksfraser/FA_ProductAttributes.git",
-                "reference": "0b6a65b06b5b317879f179316befd51499a4284d"
+                "reference": "22717ecb647da4372b847354732312428e0589de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ksfraser/FA_ProductAttributes/zipball/0b6a65b06b5b317879f179316befd51499a4284d",
-                "reference": "0b6a65b06b5b317879f179316befd51499a4284d",
+                "url": "https://api.github.com/repos/ksfraser/FA_ProductAttributes/zipball/22717ecb647da4372b847354732312428e0589de",
+                "reference": "22717ecb647da4372b847354732312428e0589de",
                 "shasum": ""
             },
             "require": {
@@ -97,7 +97,7 @@
                 "issues": "https://github.com/ksfraser/FA_ProductAttributes/issues",
                 "source": "https://github.com/ksfraser/FA_ProductAttributes/tree/main"
             },
-            "time": "2026-02-08T19:04:39+00:00"
+            "time": "2026-02-08T20:09:05+00:00"
         },
         {
             "name": "ksfraser/ksf-modules-dao",
