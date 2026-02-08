@@ -428,15 +428,19 @@ class hooks_FA_ProductAttributes extends hooks
                     }
                     echo "</select></label> ";
 
-                    echo "<button type='button' onclick='updateParentAjax(this)' name='update_product_config' value='1'>Update</button>";
+                    echo "<button type='button' onclick='fa_pa_updateParent(this)' name='update_product_config' value='1'>Update</button>";
                     echo "</form>";
 
                     echo "<script>
-                    function updateParentAjax(button) {
+                    function fa_pa_updateParent(button) {
                         var form = button.closest('form');
-                        var formData = $(form).serialize();
-                        $.post(window.location.href + '&ajax=1', formData)
-                        .done(function(data) {
+                        var formData = new FormData(form);
+                        fetch(window.location.href + '&ajax=1', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(data => {
                             try {
                                 var response = JSON.parse(data);
                                 if (response.success) {
@@ -445,11 +449,11 @@ class hooks_FA_ProductAttributes extends hooks
                                     alert('Error: ' + response.message);
                                 }
                             } catch (e) {
-                                alert('Invalid response from server');
+                                alert('Invalid response from server: ' + data.substring(0, 100));
                             }
                         })
-                        .fail(function(xhr, status, error) {
-                            alert('Error updating parent product: ' + error);
+                        .catch(error => {
+                            alert('Error updating parent product: ' + error.message);
                         });
                     }
                     </script>";
