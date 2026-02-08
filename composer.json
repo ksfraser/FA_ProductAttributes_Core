@@ -28,6 +28,7 @@
             "Ksfraser\\FA_ProductAttributes_Core\\Test\\": "tests/"
         }
     },
+    "minimum-stability": "dev",
     "scripts": {
         "test": "phpunit"
     }
