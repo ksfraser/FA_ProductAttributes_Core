@@ -102,7 +102,7 @@ class hooks_FA_ProductAttributes extends hooks
                 $app->add_rapp_function(
                     2,
                     _('Product Attributes'),
-                    $path_to_root . '/modules/FA_ProductAttributes/product_attributes_admin.php',
+                    $path_to_root . '/modules/FA_ProductAttributes_Core/product_attributes_admin.php',
                     'SA_FA_ProductAttributes'
                 );
                 break;
