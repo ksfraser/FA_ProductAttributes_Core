@@ -428,12 +428,12 @@ class hooks_FA_ProductAttributes extends hooks
                     }
                     echo "</select></label> ";
 
-                    echo "<input type='submit' name='update_product_config' value='Update'>";
+                    echo "<button type='button' onclick='updateParentAjax()' name='update_product_config'>Update</button>";
                     echo "</form>";
 
                     echo "<script>
                     function updateParentAjax() {
-                        var form = event.target;
+                        var form = document.querySelector('form');
                         var formData = $(form).serialize();
                         $.post(window.location.href + '&ajax=1', formData)
                         .done(function(data) {
@@ -447,7 +447,6 @@ class hooks_FA_ProductAttributes extends hooks
                         .fail(function(xhr, status, error) {
                             alert('Error updating parent product: ' + error);
                         });
-                        return false; // Prevent form submission
                     }
                     </script>";
 
