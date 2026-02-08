@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15ce819007bb20fcb8eacf87da1b6062",
+    "content-hash": "a8b8d6709606047b2cef4669286dfb92",
     "packages": [
         {
             "name": "ksfraser/fa-hooks",
@@ -52,11 +52,17 @@
         },
         {
             "name": "ksfraser/fa-product-attributes",
-            "version": "1.0.0",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ksfraser/FA_ProductAttributes.git",
+                "reference": "0b6a65b06b5b317879f179316befd51499a4284d"
+            },
             "dist": {
-                "type": "path",
-                "url": "../composer-lib",
-                "reference": "2660c2ff039a2145ee76c72c7df640c7d914668e"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ksfraser/FA_ProductAttributes/zipball/0b6a65b06b5b317879f179316befd51499a4284d",
+                "reference": "0b6a65b06b5b317879f179316befd51499a4284d",
+                "shasum": ""
             },
             "require": {
                 "ksfraser/fa-hooks": "^1.0 || dev-main",
@@ -70,18 +76,14 @@
                 "nikic/php-parser": "^4.0",
                 "phpunit/phpunit": "^9.5.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Ksfraser\\FA_ProductAttributes\\": "src/Ksfraser/FA_ProductAttributes/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Ksfraser\\FA_ProductAttributes\\Test\\": "tests/",
-                    "Ksfraser\\FA_ProductAttributes_Variations\\Test\\": "../fa_product_attributes_variations/tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -91,10 +93,11 @@
                 }
             ],
             "description": "FrontAccounting-compatible ordered product attributes (royal order of adjectives)",
-            "transport-options": {
-                "symlink": false,
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/ksfraser/FA_ProductAttributes/issues",
+                "source": "https://github.com/ksfraser/FA_ProductAttributes/tree/main"
+            },
+            "time": "2026-02-08T19:04:39+00:00"
         },
         {
             "name": "ksfraser/ksf-modules-dao",
