@@ -365,6 +365,11 @@ class hooks_FA_ProductAttributes extends hooks
 
             // Display content based on sub-tab
             if ($current_subtab === 'main') {
+                // Handle form submission
+                if (isset($_POST['update_product_config'])) {
+                    display_notification("Product configuration updated.");
+                }
+
                 if ($dao === null) {
                     echo "<p><strong>Database connection issue:</strong> Product attributes features are currently unavailable. Please check the module configuration.</p>";
                     echo "<p>The module is installed but cannot connect to the database. Contact your administrator.</p>";
@@ -375,7 +380,7 @@ class hooks_FA_ProductAttributes extends hooks
                     $isParent = !empty($categoryAssignments); // Product is parent if it has category assignments
 
                     echo "<h4>Product Configuration:</h4>";
-                    echo "<form method='post' action='' style='display: inline;'>";
+                    echo "<form method='post' action='' target='_self' style='display: inline;'>";
                     echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
                     echo "<label><input type='checkbox' name='is_parent' value='1' " . ($isParent ? 'checked' : '') . "> This is a parent product (can have variations)</label> ";
                     echo "<input type='submit' name='update_product_config' value='Update'>";
