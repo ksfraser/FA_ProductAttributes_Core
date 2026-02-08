@@ -180,8 +180,8 @@ class hooks_FA_ProductAttributes extends hooks
     private static function ensure_autoloader_loaded() {
         // Use __DIR__ to find the autoloader path relative to this hooks.php file
         // hooks.php is at: modules/FA_ProductAttributes/hooks.php
-        // autoloader is at: modules/FA_ProductAttributes/composer-lib/vendor/autoload.php
-        $autoloader = __DIR__ . '/composer-lib/vendor/autoload.php';
+        // autoloader is at: modules/FA_ProductAttributes/vendor/autoload.php
+        $autoloader = __DIR__ . '/vendor/autoload.php';
 
         if (file_exists($autoloader)) {
             require_once $autoloader;
@@ -201,7 +201,7 @@ class hooks_FA_ProductAttributes extends hooks
         // Only load FA function mocks in testing/development environments
         // In production, FA provides the real functions
         if (defined('FA_TESTING') || getenv('FA_TESTING') || isset($_SERVER['FA_TESTING'])) {
-            $famock = __DIR__ . '/composer-lib/vendor/ksfraser/famock/php/FAMock.php';
+            $famock = __DIR__ . '/vendor/ksfraser/famock/php/FAMock.php';
             if (file_exists($famock)) {
                 require_once $famock;
             }
@@ -242,7 +242,7 @@ class hooks_FA_ProductAttributes extends hooks
 
             // Try to load required classes directly if autoloader fails
             if (!class_exists('\Ksfraser\ModulesDAO\Db\DbAdapterInterface')) {
-                $interface_path = __DIR__ . '/composer-lib/vendor/ksfraser/ksf-modules-dao/src/Db/DbAdapterInterface.php';
+                $interface_path = __DIR__ . '/vendor/ksfraser/ksf-modules-dao/src/Db/DbAdapterInterface.php';
                 if (file_exists($interface_path)) {
                     require_once $interface_path;
                 }
@@ -250,11 +250,11 @@ class hooks_FA_ProductAttributes extends hooks
 
             // Debug: Check if class exists
             if (!class_exists('\Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter')) {
-                $autoloader_path = __DIR__ . '/composer-lib/vendor/autoload.php';
+                $autoloader_path = __DIR__ . '/vendor/autoload.php';
                 error_log("FA_ProductAttributes: FrontAccountingDbAdapter class not found after autoloader");
                 
                 // Try to load the class directly
-                $direct_path = __DIR__ . '/composer-lib/vendor/ksfraser/ksf-modules-dao/src/Db/FrontAccountingDbAdapter.php';
+                $direct_path = __DIR__ . '/vendor/ksfraser/ksf-modules-dao/src/Db/FrontAccountingDbAdapter.php';
                 if (file_exists($direct_path)) {
                     error_log("FA_ProductAttributes: Trying to load FrontAccountingDbAdapter directly from: " . $direct_path);
                     require_once $direct_path;
@@ -270,7 +270,7 @@ class hooks_FA_ProductAttributes extends hooks
 
             // Check if ProductAttributesDao exists
             if (!class_exists('\Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao')) {
-                $dao_path = __DIR__ . '/composer-lib/src/Ksfraser/FA_ProductAttributes/Dao/ProductAttributesDao.php';
+                $dao_path = __DIR__ . '/vendor/ksfraser/fa-product-attributes/src/Ksfraser/FA_ProductAttributes/Dao/ProductAttributesDao.php';
                 if (file_exists($dao_path)) {
                     require_once $dao_path;
                 } else {
