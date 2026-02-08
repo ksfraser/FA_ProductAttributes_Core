@@ -433,28 +433,29 @@ class hooks_FA_ProductAttributes extends hooks
 
                     echo "<script>
                     function fa_pa_updateParent(button) {
-                        var form = button.closest('form');
+                        var form = button.form;
                         var formData = new FormData(form);
-                        fetch(window.location.href + '&ajax=1', {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.text())
-                        .then(data => {
-                            try {
-                                var response = JSON.parse(data);
-                                if (response.success) {
-                                    alert(response.message);
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', window.location.href + '&ajax=1', true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    try {
+                                        var response = JSON.parse(xhr.responseText);
+                                        if (response.success) {
+                                            alert(response.message);
+                                        } else {
+                                            alert('Error: ' + response.message);
+                                        }
+                                    } catch (e) {
+                                        alert('Invalid response from server: ' + xhr.responseText.substring(0, 100));
+                                    }
                                 } else {
-                                    alert('Error: ' + response.message);
+                                    alert('Error updating parent product: ' + xhr.status);
                                 }
-                            } catch (e) {
-                                alert('Invalid response from server: ' + data.substring(0, 100));
                             }
-                        })
-                        .catch(error => {
-                            alert('Error updating parent product: ' + error.message);
-                        });
+                        };
+                        xhr.send(formData);
                     }
                     </script>";
 
