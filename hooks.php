@@ -371,7 +371,8 @@ class hooks_FA_ProductAttributes extends hooks
                 } else {
                     // Main tab: Show parent product status and assignments
                     $assignments = $dao->listAssignments($stock_id);
-                    $isParent = $dao->getProductParent($stock_id) === null && !empty($dao->getVariationCountForProductCategory($stock_id, 0));
+                    $categoryAssignments = $dao->listCategoryAssignments($stock_id);
+                    $isParent = !empty($categoryAssignments); // Product is parent if it has category assignments
 
                     echo "<h4>Product Configuration:</h4>";
                     echo "<form method='post' action='' style='display: inline;'>";
