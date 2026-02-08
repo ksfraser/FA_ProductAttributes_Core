@@ -9,9 +9,15 @@
             "email": "kevin@ksfraser.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/ksfraser/FA_ProductAttributes.git"
+        }
+    ],
     "require": {
         "php": ">=7.3",
-        "ksfraser/fa-product-attributes": "*",
+        "ksfraser/fa-product-attributes": "dev-main",
         "ksfraser/ksf-schemamanager": "*",
         "ksfraser/ksf-rest-api": "*"
     },

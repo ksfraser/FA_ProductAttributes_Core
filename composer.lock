@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a8b8d6709606047b2cef4669286dfb92",
+    "content-hash": "ab9eb2a74878d8edebc60a92c6a6c736",
     "packages": [
         {
             "name": "ksfraser/fa-hooks",
@@ -58,12 +58,6 @@
                 "url": "https://github.com/ksfraser/FA_ProductAttributes.git",
                 "reference": "22717ecb647da4372b847354732312428e0589de"
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ksfraser/FA_ProductAttributes/zipball/22717ecb647da4372b847354732312428e0589de",
-                "reference": "22717ecb647da4372b847354732312428e0589de",
-                "shasum": ""
-            },
             "require": {
                 "ksfraser/fa-hooks": "^1.0 || dev-main",
                 "ksfraser/ksf-modules-dao": "^0.3",
@@ -83,7 +77,12 @@
                     "Ksfraser\\FA_ProductAttributes\\": "src/Ksfraser/FA_ProductAttributes/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Ksfraser\\FA_ProductAttributes\\Test\\": "tests/",
+                    "Ksfraser\\FA_ProductAttributes_Variations\\Test\\": "../fa_product_attributes_variations/tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -93,10 +92,6 @@
                 }
             ],
             "description": "FrontAccounting-compatible ordered product attributes (royal order of adjectives)",
-            "support": {
-                "issues": "https://github.com/ksfraser/FA_ProductAttributes/issues",
-                "source": "https://github.com/ksfraser/FA_ProductAttributes/tree/main"
-            },
             "time": "2026-02-08T20:09:05+00:00"
         },
         {
@@ -2053,7 +2048,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "ksfraser/fa-product-attributes": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
