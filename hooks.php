@@ -367,6 +367,11 @@ class hooks_FA_ProductAttributes extends hooks
             if ($current_subtab === 'main') {
                 // Handle form submission
                 if (isset($_POST['update_product_config'])) {
+                    if ($dao) {
+                        $parentStockId = $_POST['parent_stock_id'] ?? null;
+                        if ($parentStockId === '') $parentStockId = null;
+                        $dao->setProductParent($stock_id, $parentStockId);
+                    }
                     display_notification("Product configuration updated.");
                 }
 
@@ -378,10 +383,23 @@ class hooks_FA_ProductAttributes extends hooks
                     $assignments = $dao->listAssignments($stock_id);
                     $categoryAssignments = $dao->listCategoryAssignments($stock_id);
                     $isParent = !empty($categoryAssignments); // Product is parent if it has category assignments
+                    $currentParent = $dao->getProductParent($stock_id);
+                    $allProducts = $dao->getAllProducts();
 
-                    echo "<h4>Product Configuration:</h4>";
+                    echo "<h4>Product Hierarchy:</h4>";
                     echo "<form method='post' action='' target='_self' style='display: inline;'>";
                     echo "<input type='hidden' name='stock_id' value='" . htmlspecialchars($stock_id) . "'>";
+
+                    // Parent selector
+                    echo "<label>Parent Product: <select name='parent_stock_id'>";
+                    echo "<option value=''>None</option>";
+                    foreach ($allProducts as $product) {
+                        if ($product['stock_id'] === $stock_id) continue; // Can't be parent of self
+                        $selected = ($currentParent === $product['stock_id']) ? 'selected' : '';
+                        echo "<option value='" . htmlspecialchars($product['stock_id']) . "' $selected>" . htmlspecialchars($product['stock_id'] . ' - ' . $product['description']) . "</option>";
+                    }
+                    echo "</select></label> ";
+
                     echo "<label><input type='checkbox' name='is_parent' value='1' " . ($isParent ? 'checked' : '') . "> This is a parent product (can have variations)</label> ";
                     echo "<input type='submit' name='update_product_config' value='Update'>";
                     echo "</form>";
