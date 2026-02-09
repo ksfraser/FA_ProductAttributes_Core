@@ -12,7 +12,7 @@ class hooks_FA_ProductAttributes extends hooks
     function install()
     {
         global $path_to_root;
-
+/*
         // Check if fa-hooks dependency is installed
         $faHooksPath = $path_to_root . '/modules/0fa-hooks';
         if (!file_exists($faHooksPath . '/hooks.php')) {
@@ -37,6 +37,14 @@ class hooks_FA_ProductAttributes extends hooks
                 }
             }
         }
+*/
+	require_once( 'fa-hooks-dependency.php' );
+	$fah = new fa-hooks-dependency();
+	if( ! $fah->isInstalled() )
+	{
+		display_error('FA-Hooks module must be installed before Product Attributes. Please install 0fa-hooks module first.');
+		return false;
+	}
 
         // Install composer dependencies using dedicated installer class
         $module_path = $path_to_root . '/modules/FA_ProductAttributes';
@@ -69,6 +77,7 @@ class hooks_FA_ProductAttributes extends hooks
      */
     private function createDatabaseSchema($module_path)
     {
+/*
         $schema_file = $module_path . '/sql/schema.sql';
         if (!file_exists($schema_file)) {
             throw new Exception('Schema file not found: ' . $schema_file);
@@ -91,6 +100,15 @@ class hooks_FA_ProductAttributes extends hooks
                 }
             }
         }
+*/
+	try {
+		require_once( 'createDatabaseSchema.php' );
+		$cds = new createDatabaseSchema( $module_path, "schema.sql" );
+	} catch( Exception $e )
+	{
+		error_log( 'Create Database Schema failure: ' . $e->getMessage() );
+		throw $e;
+	}
     }
 
     function install_options($app)
@@ -178,6 +196,7 @@ class hooks_FA_ProductAttributes extends hooks
      * Ensure the composer autoloader is loaded
      */
     private static function ensure_autoloader_loaded() {
+/*
         // Use __DIR__ to find the autoloader path relative to this hooks.php file
         // hooks.php is at: modules/FA_ProductAttributes/hooks.php
         // autoloader is at: modules/FA_ProductAttributes/vendor/autoload.php
@@ -206,6 +225,9 @@ class hooks_FA_ProductAttributes extends hooks
                 require_once $famock;
             }
         }
+*/
+	require_once( 'EnsureAutoloader.php' );
+	EnsureAutoloader::ensureAutoloaderLoaded();
     }
 
     /**
@@ -236,51 +258,27 @@ class hooks_FA_ProductAttributes extends hooks
      */
     private function get_product_attributes_dao() {
         static $dao = null;
-        if ($dao === null) {
-            // Ensure autoloader is loaded
-            self::ensure_autoloader_loaded();
-
-            // Try to load required classes directly if autoloader fails
-            if (!class_exists('\Ksfraser\ModulesDAO\Db\DbAdapterInterface')) {
-                $interface_path = __DIR__ . '/vendor/ksfraser/ksf-modules-dao/src/Db/DbAdapterInterface.php';
-                if (file_exists($interface_path)) {
-                    require_once $interface_path;
+        if ($dao === null) 
+	{
+            	// Ensure autoloader is loaded
+            	self::ensure_autoloader_loaded();
+		if (!class_exists('\Ksfraser\ModulesDAO\Db\DbAdapterInterface')) {
+                	throw new \Exception("DbAdapterInterface class not found. Check autoloader!");
                 }
-            }
-
-            // Debug: Check if class exists
-            if (!class_exists('\Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter')) {
-                $autoloader_path = __DIR__ . '/vendor/autoload.php';
-                error_log("FA_ProductAttributes: FrontAccountingDbAdapter class not found after autoloader");
-                
-                // Try to load the class directly
-                $direct_path = __DIR__ . '/vendor/ksfraser/ksf-modules-dao/src/Db/FrontAccountingDbAdapter.php';
-                if (file_exists($direct_path)) {
-                    error_log("FA_ProductAttributes: Trying to load FrontAccountingDbAdapter directly from: " . $direct_path);
-                    require_once $direct_path;
+		if (!class_exists('\Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter')) 
+		{
+                	throw new \Exception("FrontAccountingDbAdapter class not found. Check autoloader!");
                 }
-                
-                if (!class_exists('\Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter')) {
-                    throw new \Exception("FrontAccountingDbAdapter class not found. Check autoloader path: " . $autoloader_path);
+		// Check if ProductAttributesDao exists
+		if (!class_exists('\Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao')) 
+		{
+                	throw new \Exception("ProductAttributesDao class not found");
                 }
-            }
-
-            // Create database adapter directly (avoid factory issues)
-            $db_adapter = new \Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter();
-
-            // Check if ProductAttributesDao exists
-            if (!class_exists('\Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao')) {
-                $dao_path = __DIR__ . '/vendor/ksfraser/fa-product-attributes/src/Ksfraser/FA_ProductAttributes/Dao/ProductAttributesDao.php';
-                if (file_exists($dao_path)) {
-                    require_once $dao_path;
-                } else {
-                    throw new \Exception("ProductAttributesDao class not found at: " . $dao_path);
-                }
-            }
-
-            // Create DAO
-            $dao = new \Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao($db_adapter, null);
-        }
+		// Create database adapter.
+		$db_adapter = new \Ksfraser\ModulesDAO\Db\FrontAccountingDbAdapter();
+		// Create DAO
+		$dao = new \Ksfraser\FA_ProductAttributes\Dao\ProductAttributesDao($db_adapter, null);
+	}
         return $dao;
     }
 
