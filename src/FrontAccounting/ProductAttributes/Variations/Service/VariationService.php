@@ -2,8 +2,8 @@
 
 namespace FrontAccounting\ProductAttributes\Variations\Service;
 
-use FrontAccounting\ProductAttributes\Variations\Dao\VariationsDao;
 use FrontAccounting\ProductAttributes\Dao\ProductAttributesDao;
+use FrontAccounting\ProductAttributes\Variations\Dao\VariationsDao;
 use Ksfraser\ModulesDAO\Db\DbAdapterInterface;
 
 class VariationService

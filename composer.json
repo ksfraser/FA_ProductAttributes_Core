@@ -30,5 +30,15 @@
     "minimum-stability": "dev",
     "scripts": {
         "test": "phpunit"
+    },
+    "repositories": {
+        "modules-dao": {
+            "type": "path",
+            "url": "../ksf_ModulesDAO"
+        },
+        "common": {
+            "type": "path",
+            "url": "../ksf_FA_Common"
+        }
     }
 }

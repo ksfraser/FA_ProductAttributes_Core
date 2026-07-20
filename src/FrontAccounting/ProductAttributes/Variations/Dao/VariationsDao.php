@@ -457,37 +457,4 @@ class VariationsDao
             ['id' => $assignmentId]
         );
     }
-
-    /**
-     * Hard-delete a value and all of its assignments.
-     */
-    public function deleteValue(int $id): void
-    {
-        $p = $this->db->getTablePrefix();
-        // Remove dependent assignments first
-        $this->db->execute(
-            "DELETE FROM `{$p}product_attribute_assignments` WHERE value_id = :value_id",
-            ['value_id' => $id]
-        );
-        $this->db->execute(
-            "DELETE FROM `{$p}product_attribute_values` WHERE id = :id",
-            ['id' => $id]
-        );
-    }
-
-    /**
-     * Return a distinct list of parent_stock_id values from the assignments table.
-     * Used to populate the "Assign Parent" dropdown for simple products.
-     *
-     * @return array<int, array<string, string>>  e.g. [['parent_stock_id' => 'ABC'], ...]
-     */
-    public function getParentStockIds(): array
-    {
-        $p = $this->db->getTablePrefix();
-        return $this->db->query(
-            "SELECT DISTINCT parent_stock_id FROM `{$p}product_attribute_assignments`"
-            . " WHERE parent_stock_id IS NOT NULL AND parent_stock_id != ''
-            ORDER BY parent_stock_id"
-        );
-    }
 }

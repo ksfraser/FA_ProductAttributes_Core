@@ -9,6 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class SampleTab extends AbstractTab
 {
+    public function getName(): string
+    {
+        return 'sample_tab';
+    }
+
     public function getTabKey(): string
     {
         return 'sample_tab';
@@ -22,6 +27,11 @@ class SampleTab extends AbstractTab
 
 class AnotherTab extends AbstractTab
 {
+    public function getName(): string
+    {
+        return 'another_tab';
+    }
+
     public function getTabKey(): string
     {
         return 'another_tab';
@@ -65,7 +75,7 @@ class TabRegistryTest extends TestCase
         $registry->register(new SampleTab());
         $registry->register(new AnotherTab());
 
-        $all = $registry->getAllTabs();
+        $all = $registry->getAll();
         $this->assertCount(2, $all);
         $this->assertArrayHasKey('sample_tab', $all);
         $this->assertArrayHasKey('another_tab', $all);
@@ -97,6 +107,7 @@ class TabRegistryTest extends TestCase
 namespace FrontAccounting\ProductAttributes\Test\Plugin\Discovery;
 use FrontAccounting\ProductAttributes\Plugin\AbstractTab;
 class DiscoveredTab extends AbstractTab {
+    public function getName(): string { return "discovered"; }
     public function getTabKey(): string { return "discovered"; }
     public function getTabLabel(): string { return "Discovered"; }
 }';
@@ -106,10 +117,6 @@ class DiscoveredTab extends AbstractTab {
         $registry->discover($tmpDir);
 
         $this->assertTrue($registry->hasTab('discovered'));
-        $this->assertStringEqualsFile(
-            $tmpDir . '/DiscoveredTab.php',
-            ''
-        ); // file was loaded
 
         // Cleanup
         @unlink($tmpDir . '/DiscoveredTab.php');
@@ -121,7 +128,7 @@ class DiscoveredTab extends AbstractTab {
         $registry = new TabRegistry();
         $registry->discover('/nonexistent/path');
 
-        $this->assertCount(0, $registry->getAllTabs());
+        $this->assertCount(0, $registry->getAll());
     }
 
     public function testRegisterOverridesSameKey(): void
@@ -129,10 +136,12 @@ class DiscoveredTab extends AbstractTab {
         $registry = new TabRegistry();
 
         $first = new class extends AbstractTab {
+            public function getName(): string { return 'dup'; }
             public function getTabKey(): string { return 'dup'; }
             public function getTabLabel(): string { return 'First'; }
         };
         $second = new class extends AbstractTab {
+            public function getName(): string { return 'dup'; }
             public function getTabKey(): string { return 'dup'; }
             public function getTabLabel(): string { return 'Second'; }
         };
@@ -140,7 +149,7 @@ class DiscoveredTab extends AbstractTab {
         $registry->register($first);
         $registry->register($second);
 
-        $this->assertCount(1, $registry->getAllTabs());
+        $this->assertCount(1, $registry->getAll());
         $this->assertSame('Second', $registry->getTab('dup')->getTabLabel());
     }
 }
