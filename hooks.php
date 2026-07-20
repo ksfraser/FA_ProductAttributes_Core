@@ -5,9 +5,9 @@
 
 define('SS_FA_ProductAttributes', 112 << 8);
 
-class hooks_FA_ProductAttributes extends hooks
+class hooks_FA_ProductAttributes_Core extends hooks
 {
-    var $module_name = 'FA_ProductAttributes';
+    var $module_name = 'FA_ProductAttributes_Core';
 
     function install()
     {
